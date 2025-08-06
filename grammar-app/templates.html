@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Indo Grammar Checker</title>
+  <link href="./static/style.css" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <h1>🔍 Pemeriksa Tata Bahasa Indonesia</h1>
+    <form method="post" action="/correct">
+      <textarea name="text" placeholder="Tulis kalimat yang ingin diperiksa...">{{ input or "" }}</textarea>
+      <button type="submit">Periksa</button>
+    </form>
+
+    {% if output %}
+    <div class="result">
+      <h2>✅ Kalimat yang Telah Diperbaiki:</h2>
+      <p>{{ output }}</p>
+    </div>
+    {% endif %}
+  </div>
+</body>
+</html>

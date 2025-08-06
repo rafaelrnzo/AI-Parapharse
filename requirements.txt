@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+redis
+langchain
+sentence-transformers
+openai
+pydantic
+tiktoken
