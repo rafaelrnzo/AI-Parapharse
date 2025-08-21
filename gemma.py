@@ -12,7 +12,6 @@ from nltk.tokenize import word_tokenize
 from dotenv import load_dotenv
 from better_profanity import profanity
 
-# ---------- ENV & CONFIG ----------
 load_dotenv()
 OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL") or "http://192.168.100.3:11500"
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL") or "gemma3:latest"
@@ -27,10 +26,8 @@ except LookupError:
 
 app = FastAPI(title="Ollama Grammar Corrector + Redis Cache")
 
-# ---------- Redis Connection ----------
 redis_client = redis.from_url(REDIS_URL, decode_responses=True)
 
-# ---------- Profanity Setup ----------
 profanity.load_censor_words()
 additional_bad = [
     "tai", "goblok", "kontol", "anjing", "bangsat", "sialan", "memek",
@@ -58,7 +55,6 @@ class ProfanityResponse(BaseModel):
     found: bool
     bad_words: List[str]
 
-# ---------- Helpers ----------
 def build_prompt(text: str, style: StyleType) -> str:
     if style == "formal":
         style_desc = "Gaya penulisan profesional dan sesuai kaidah bahasa Indonesia yang baku"
@@ -104,7 +100,6 @@ async def call_ollama(prompt: str) -> str:
     data = resp.json()
     return data.get("response", "").strip()
 
-# ---------- Endpoint ----------
 @app.post("/correct", response_model=CorrectionResponse)
 async def correct_grammar(request: CorrectionRequest):
     if not request.text.strip():
@@ -115,7 +110,6 @@ async def correct_grammar(request: CorrectionRequest):
     if cached:
         return CorrectionResponse(**json.loads(cached))
 
-    # Proses normal jika belum ada di cache
     prompt = build_prompt(request.text, request.style)
     corrected = await call_ollama(prompt)
 
@@ -139,7 +133,6 @@ async def correct_grammar(request: CorrectionRequest):
         typo_words=typo_words
     )
 
-    # Simpan ke Redis (TTL opsional, misal 1 jam)
     await redis_client.set(cache_key, json.dumps(result.dict()), ex=3600)
 
     return result

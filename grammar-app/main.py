@@ -11,7 +11,6 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from typing import Optional
 
-# ---------- Langchain Setup ----------
 class GrammarCorrection(BaseModel):
     corrected: str = Field(description="Kalimat hasil perbaikan, TANPA penjelasan atau kutipan")
 
@@ -49,7 +48,6 @@ grammar_chain = (
     | parser
 )
 
-# ---------- FastAPI Setup ----------
 app = FastAPI(title="Indo Grammar Checker")
 
 app.add_middleware(
@@ -63,7 +61,6 @@ app.add_middleware(
 app.mount("./", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
-# ---------- Endpoints ----------
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
     return templates.TemplateResponse("index.html", {"request": request, "output": None})
